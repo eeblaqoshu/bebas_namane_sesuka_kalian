@@ -9,9 +9,16 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "@yudiel/react-qr-scanner": "^2.6.0",
+    "firebase": "^13.2.0",
+    "firebase-admin": "^14.5.0",
+    "lucide-react": "^1.70.0",
     "next": "16.4.5",
+    "qrcode.react": "^4.2.0",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",
@@ -20,7 +27,12 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.5",
+    "prisma": "^6.19.3",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5"
+  },
+  "prisma": {
+    "seed": "npx tsx prisma/seed.ts"
   }
 }

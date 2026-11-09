@@ -4,7 +4,7 @@ Versi 1.0 | Status: Draft siap dikembangkan | Stack: Next.js, PostgreSQL, Tailwi
 
 ## 1. Ringkasan
 
-Website presensi kehadiran pengurus (STO) dan panitia organisasi. Presensi dilakukan dengan login akun Google mahasiswa, memilih agenda, lalu scan QR code dalam radius lokasi tertentu. Data dikelompokkan per **periode kepengurusan**, per **proker**, dan per **agenda** (rapat PJ, rapat besar, rapat koordinasi, hari H).
+Website presensi kehadiran pengurus (STO) dan panitia organisasi. Presensi dilakukan dengan login akun Google mahasiswa (melalui Firebase Authentication), memilih agenda, lalu scan QR code dalam radius lokasi tertentu. Data dikelompokkan per **periode kepengurusan**, per **proker**, dan per **agenda** (rapat PJ, rapat besar, rapat koordinasi, hari H).
 
 ## 2. Tujuan dan non-tujuan
 
@@ -24,10 +24,10 @@ Website presensi kehadiran pengurus (STO) dan panitia organisasi. Presensi dilak
 
 | Peran | Siapa | Cara login | Kemampuan |
 |---|---|---|---|
-| `admin` | Pengelola sistem | Username + password | Semua fitur adsek, kelola periode, kelola data STO, kelola akun adsek |
-| `sekretaris_umum` | Adsek | Username + password | Buat proker, kepanitiaan, agenda, sesi presensi, ubah durasi |
-| `sekretaris_inti` | Adsek | Username + password | Sama seperti sekretaris umum |
-| STO / panitia | Pengurus terdaftar | Google (email mahasiswa) | Lihat home, profil, scan QR |
+| `admin` | Pengelola sistem | Email + password (Firebase) | Semua fitur adsek, kelola periode, kelola data STO, kelola akun adsek |
+| `sekretaris_umum` | Adsek | Email + password (Firebase) | Buat proker, kepanitiaan, agenda, sesi presensi, ubah durasi |
+| `sekretaris_inti` | Adsek | Email + password (Firebase) | Sama seperti sekretaris umum |
+| STO / panitia | Pengurus terdaftar | Google via Firebase (email mahasiswa) | Lihat home, profil, scan QR |
 
 Istilah: **adsek** = admin + sekretaris umum + sekretaris inti. **STO** = pengurus terdaftar pada suatu periode.
 
@@ -54,8 +54,8 @@ target_peserta:   hanya_pj_pi | semua_panitia | semua_panitia_sto
 status_presensi:  hadir | terlambat
 
 periode(id, nama, tgl_mulai, tgl_selesai, status)
-akun_adsek(id, nama, username UNIQUE, password_hash, role)
-STO(id, periode_id, nama, nim, email_google UNIQUE, jabatan, divisi, foto)
+akun_adsek(id, nama, email UNIQUE, firebase_uid UNIQUE NULL, role)
+STO(id, periode_id, nama, nim, email_google UNIQUE, firebase_uid UNIQUE NULL, jabatan, divisi, foto)
 proker(id, periode_id, nama, deskripsi, dibuat_oleh)
 kepanitiaan(id, proker_id, sto_id, peran, divisi_panitia, UNIQUE(proker_id, sto_id))
 agenda(id, proker_id, jenis, judul, urutan, tgl_pelaksanaan DATE,
@@ -103,7 +103,7 @@ Peran selalu dibaca dari `kepanitiaan` pada saat pengecekan (per pasangan `proke
 
 ### 5.6 Validasi scan (semua dilakukan di server)
 Presensi disimpan hanya jika **semua** syarat terpenuhi:
-1. Pengguna login Google dan emailnya terdaftar di tabel `STO` periode aktif.
+1. Sesi login valid (ID token/session cookie Firebase diverifikasi server) dan emailnya terdaftar di tabel `STO` periode aktif.
 2. Token QR valid dan belum kedaluwarsa.
 3. Waktu server berada di antara `buka_at` dan `tutup_at`.
 4. Jarak (Haversine) antara lokasi pemindai dan titik sesi ≤ `radius_m`.
@@ -120,8 +120,14 @@ Setiap penolakan mengembalikan alasan yang jelas ke pengguna (di luar waktu, di 
 ## 6. Fitur dan alur
 
 ### 6.1 Login
-- **STO**: Google OAuth. Setelah callback, email dicek ke `STO`. Tidak terdaftar = login ditolak dengan pesan jelas.
-- **Adsek**: form username + password (hash bcrypt/argon2).
+Autentikasi memakai **Firebase Authentication**; otorisasi (siapa boleh apa) tetap diputuskan database lewat tabel `akun_adsek`, `STO`, `kepanitiaan`, dan `bolehAkses`.
+
+Alur: klien login via Firebase dan mendapat ID token → dikirim ke API → server memverifikasi token dengan Firebase Admin SDK → server mencocokkan email ke database → jika cocok, server membuat **session cookie** httpOnly. Jika email tidak terdaftar, sesi tidak dibuat dan login ditolak dengan pesan jelas.
+
+- **STO**: tombol "Masuk dengan Google" (provider Google di Firebase). Email dicek ke `STO` periode aktif.
+- **Adsek**: form email + password (provider Email/Password di Firebase). Email dicek ke `akun_adsek`. Jika sebuah email ada di `akun_adsek` dan `STO`, `akun_adsek` diprioritaskan.
+- **Pembuatan akun adsek**: dilakukan admin dari dashboard. Server membuat pengguna Firebase lewat Admin SDK, menyimpan `firebase_uid`, lalu mengirim tautan atur password ke email adsek. Aplikasi tidak pernah menyimpan atau melihat password.
+- Kolom `firebase_uid` diisi saat akun dibuat (adsek) atau saat login pertama (STO), lalu dipakai sebagai penghubung tetap.
 - Setelah login, STO diarahkan ke home; adsek ke dashboard.
 
 ### 6.2 Home STO/panitia
@@ -163,7 +169,7 @@ Setiap penolakan mengembalikan alasan yang jelas ke pengguna (di luar waktu, di 
 
 ## 8. Kebutuhan non-fungsional
 
-- **Keamanan**: semua validasi presensi di server; route adsek dilindungi role; password ter-hash; secret QR tidak pernah dikirim ke klien.
+- **Keamanan**: semua validasi presensi di server; route adsek dilindungi role; password dikelola Firebase dan tidak disimpan di database; secret QR tidak pernah dikirim ke klien.
 - **HTTPS wajib** di produksi (kamera dan geolokasi tidak berfungsi di HTTP).
 - **Zona waktu**: simpan timestamp UTC (`timestamptz`), tampilkan Asia/Jakarta (WIB).
 - **Responsif**: mobile-first (STO memakai ponsel), dashboard adsek nyaman di desktop.
@@ -184,7 +190,7 @@ Setiap penolakan mengembalikan alasan yang jelas ke pengguna (di luar waktu, di 
 ## 10. Tahapan pengembangan
 
 1. **Fondasi**: setup proyek, `schema.prisma`, migrasi, seed data simulasi.
-2. **Autentikasi**: Google (STO) + Credentials (adsek), proteksi route per role.
+2. **Autentikasi**: Firebase Auth (Google untuk STO, email/password untuk adsek), session cookie server, proteksi route per role.
 3. **Master data**: periode, STO (impor CSV), proker, kepanitiaan, agenda.
 4. **Presensi inti**: sesi, QR dinamis, API scan dengan 6 validasi, `bolehAkses`.
 5. **Home dan profil STO**: tiga tab status.
@@ -195,5 +201,5 @@ Setiap penolakan mengembalikan alasan yang jelas ke pengguna (di luar waktu, di 
 
 - Batas "terlambat" tetap 15 menit atau dibuat per sesi (`batas_terlambat_menit`)?
 - Perlu waktu selesai agenda (`waktu_selesai`)?
-- Bagaimana adsek pertama dibuat (seed oleh developer)?
+- Adsek/admin pertama dibuat lewat skrip seed yang membuat pengguna Firebase dan baris `akun_adsek` sekaligus.
 - Apakah STO yang bukan panitia boleh melihat agenda berlabel `semua_panitia_sto` dari proker yang bukan miliknya? (Asumsi v1: ya, selama satu periode.)

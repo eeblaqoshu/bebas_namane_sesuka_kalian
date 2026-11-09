@@ -4,13 +4,13 @@ Panduan ini wajib dibaca sebelum menulis kode di proyek **Sistem Presensi Pengur
 
 ## 1. Ringkasan proyek
 
-Website presensi STO/panitia dengan login Google, scan QR dinamis, dan validasi lokasi radius 500 m. Data dikelompokkan: `periode → proker → agenda → sesi_presensi → presensi`.
+Website presensi STO/panitia dengan login Firebase Authentication (Google untuk STO, email/password untuk adsek), scan QR dinamis, dan validasi lokasi radius 500 m. Data dikelompokkan: `periode → proker → agenda → sesi_presensi → presensi`.
 
 ## 2. Stack
 
 - Next.js (App Router, TypeScript) + Tailwind CSS
 - PostgreSQL + Prisma ORM
-- Auth.js (NextAuth): Google provider (STO) + Credentials provider (adsek), strategi sesi **JWT**
+- Firebase Authentication: provider Google (STO) + Email/Password (adsek). Klien memakai Firebase JS SDK, server memakai **Firebase Admin SDK** (session cookie httpOnly). Auth.js tidak dipakai.
 - `qrcode.react` (menampilkan QR), `@yudiel/react-qr-scanner` (scan)
 - Validasi input: Zod
 
@@ -24,7 +24,7 @@ Website presensi STO/panitia dengan login Google, scan QR dinamis, dan validasi 
 | PI | peran `ketua`, `sekretaris`, `bendahara` |
 | PJ | peran `pj_divisi` |
 
-Nama tabel/enum/kolom mengikuti PRD persis: `akun_adsek`, `STO`, `proker`, `kepanitiaan`, `agenda`, `sesi_presensi`, `presensi`. Kolom relasi: `proker_id`, `sto_id`, `agenda_id`, `sesi_id`. Jangan memakai nama lama (`kegiatan`, `users_pengurus`, `akun_staf`, `pengurus_id`).
+Nama tabel/enum/kolom mengikuti PRD persis (akun adsek memakai `email` dan `firebase_uid`, tanpa `username`/`password_hash`): `akun_adsek`, `STO`, `proker`, `kepanitiaan`, `agenda`, `sesi_presensi`, `presensi`. Kolom relasi: `proker_id`, `sto_id`, `agenda_id`, `sesi_id`. Jangan memakai nama lama (`kegiatan`, `users_pengurus`, `akun_staf`, `pengurus_id`).
 
 Di Prisma, pakai nama model PascalCase (`Sto`, `Proker`, ...) dengan `@@map` ke nama tabel di atas bila perlu.
 
@@ -62,7 +62,9 @@ app/
     presensi/scan/route.ts
     presensi/qr-token/route.ts
 lib/
-  auth.ts          konfigurasi Auth.js
+  firebase-client.ts  inisialisasi Firebase JS SDK (klien)
+  firebase-admin.ts   inisialisasi Admin SDK (server saja)
+  auth.ts             verifikasi session cookie, ambil pengguna (adsek/STO) dari database
   prisma.ts        singleton Prisma client
   akses.ts         bolehAkses (satu-satunya aturan target_peserta)
   geo.ts           haversine
@@ -90,7 +92,11 @@ Letakkan logika bisnis di `lib/` atau server actions/route handlers, bukan di ko
 
 ## 7. Keamanan
 
-- Password adsek di-hash (argon2 atau bcrypt). Jangan pernah mencatat password atau `qr_secret` ke log.
+- Password dikelola Firebase; **jangan menyimpan atau mencatat password** di database/log. Jangan mencatat `qr_secret` ke log.
+- Verifikasi ID token/session cookie **hanya di server** (Admin SDK `verifyIdToken` / `verifySessionCookie` dengan pengecekan revoked). Jangan mempercayai email atau uid dari klien.
+- Setelah token valid, selalu cocokkan email ke `akun_adsek` lalu `STO` periode aktif. Tidak ada di keduanya = tolak, jangan buat sesi.
+- Firebase Admin SDK tidak jalan di Edge runtime: middleware hanya mengecek keberadaan cookie sesi; verifikasi penuh dilakukan di route handler dan server component (runtime Node).
+- Kunci service account adalah rahasia server: jangan di kode klien, jangan di-commit, jangan memakai prefix `NEXT_PUBLIC_`.
 - Lindungi route dengan middleware berbasis role: `/dashboard/*` hanya adsek, `/home|/scan|/profil` hanya STO. Hak `admin`-only: periode, STO, akun adsek.
 - Jangan percaya data dari klien (koordinat hanya masukan untuk dihitung server; tetap batasi rate pada endpoint scan).
 - Simpan rahasia di `.env`; jangan commit. Sediakan `.env.example`.
@@ -100,10 +106,15 @@ Letakkan logika bisnis di `lib/` atau server actions/route handlers, bukan di ko
 
 ```
 DATABASE_URL=
-AUTH_SECRET=
-AUTH_GOOGLE_ID=
-AUTH_GOOGLE_SECRET=
-NEXTAUTH_URL=
+# Klien (publik, aman terlihat di browser)
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
+# Server (RAHASIA)
+FIREBASE_PROJECT_ID=
+FIREBASE_CLIENT_EMAIL=
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
 ```
 
 ## 8. Cara kerja yang diharapkan

@@ -1,0 +1,239 @@
+// prisma/schema.prisma
+// Sistem Presensi Pengurus Organisasi
+// Sumber kebenaran kebutuhan: PRD.md
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// ENUM
+// ─────────────────────────────────────────────
+
+enum StatusPeriode {
+  aktif
+  selesai
+
+  @@map("status_periode")
+}
+
+enum RoleAdsek {
+  admin
+  sekretaris_umum
+  sekretaris_inti
+
+  @@map("role_adsek")
+}
+
+enum PeranPanitia {
+  ketua
+  sekretaris
+  bendahara
+  pj_divisi
+  anggota
+
+  @@map("peran_panitia")
+}
+
+enum JenisAgenda {
+  rapat_pj
+  rapat_besar
+  rapat_koordinasi
+  hari_h
+
+  @@map("jenis_agenda")
+}
+
+enum TargetPeserta {
+  hanya_pj_pi
+  semua_panitia
+  semua_panitia_sto
+
+  @@map("target_peserta")
+}
+
+enum StatusPresensi {
+  hadir
+  terlambat
+
+  @@map("status_presensi")
+}
+
+// ─────────────────────────────────────────────
+// 1. PERIODE
+// ─────────────────────────────────────────────
+
+model Periode {
+  id         Int           @id @default(autoincrement())
+  nama       String
+  tglMulai   DateTime      @map("tgl_mulai") @db.Date
+  tglSelesai DateTime      @map("tgl_selesai") @db.Date
+  status     StatusPeriode @default(aktif)
+
+  sto    Sto[]
+  proker Proker[]
+
+  @@map("periode")
+}
+
+// ─────────────────────────────────────────────
+// 2. AKUN & STO
+// ─────────────────────────────────────────────
+
+model AkunAdsek {
+  id           Int       @id @default(autoincrement())
+  nama         String
+  email        String    @unique
+  firebaseUid  String?   @unique @map("firebase_uid")
+  role         RoleAdsek
+
+  prokerDibuat  Proker[]
+  agendaDibuat  Agenda[]
+  sesiDibuat    SesiPresensi[]
+
+  @@map("akun_adsek")
+}
+
+model Sto {
+  id          Int     @id @default(autoincrement())
+  periodeId   Int     @map("periode_id")
+  nama        String
+  nim         String
+  emailGoogle String  @unique @map("email_google")
+  firebaseUid String? @unique @map("firebase_uid")
+  jabatan     String?
+  divisi      String?
+  foto        String?
+
+  periode     Periode       @relation(fields: [periodeId], references: [id])
+  kepanitiaan Kepanitiaan[]
+  presensi    Presensi[]
+
+  @@index([periodeId])
+  @@map("STO")
+}
+
+// ─────────────────────────────────────────────
+// 3. PROKER & KEPANITIAAN
+// ─────────────────────────────────────────────
+
+model Proker {
+  id         Int     @id @default(autoincrement())
+  periodeId  Int     @map("periode_id")
+  nama       String
+  deskripsi  String?
+  dibuatOleh Int     @map("dibuat_oleh")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  periode     Periode       @relation(fields: [periodeId], references: [id])
+  pembuat     AkunAdsek     @relation(fields: [dibuatOleh], references: [id])
+  kepanitiaan Kepanitiaan[]
+  agenda      Agenda[]
+
+  @@index([periodeId])
+  @@map("proker")
+}
+
+model Kepanitiaan {
+  id             Int          @id @default(autoincrement())
+  prokerId       Int          @map("proker_id")
+  stoId          Int          @map("sto_id")
+  peran          PeranPanitia
+  divisiPanitia  String?      @map("divisi_panitia")
+
+  proker Proker @relation(fields: [prokerId], references: [id], onDelete: Cascade)
+  sto    Sto    @relation(fields: [stoId], references: [id])
+
+  @@unique([prokerId, stoId])
+  @@index([stoId])
+  @@map("kepanitiaan")
+}
+
+// ─────────────────────────────────────────────
+// 4. AGENDA (rapat PJ, rapat besar, rapat koordinasi, hari H)
+// ─────────────────────────────────────────────
+
+model Agenda {
+  id               Int           @id @default(autoincrement())
+  prokerId         Int           @map("proker_id")
+  jenis            JenisAgenda
+  judul            String
+  urutan           Int           @default(1)
+  tglPelaksanaan   DateTime      @map("tgl_pelaksanaan") @db.Date
+  waktuPelaksanaan DateTime      @map("waktu_pelaksanaan") @db.Time(0)
+  lokasiNama       String?      @map("lokasi_nama")
+  targetPeserta    TargetPeserta @map("target_peserta")
+  dibuatOleh       Int           @map("dibuat_oleh")
+  createdAt        DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  proker  Proker         @relation(fields: [prokerId], references: [id])
+  pembuat AkunAdsek      @relation(fields: [dibuatOleh], references: [id])
+  sesi    SesiPresensi[]
+
+  @@index([prokerId, tglPelaksanaan])
+  @@map("agenda")
+}
+
+// ─────────────────────────────────────────────
+// 5. PRESENSI
+// ─────────────────────────────────────────────
+
+model SesiPresensi {
+  id          Int      @id @default(autoincrement())
+  agendaId    Int      @map("agenda_id")
+  dibuatOleh  Int      @map("dibuat_oleh")
+  bukaAt      DateTime @map("buka_at") @db.Timestamptz(6)
+  tutupAt     DateTime @map("tutup_at") @db.Timestamptz(6)
+  durasiMenit Int      @map("durasi_menit")
+  lat         Decimal  @db.Decimal(9, 6)
+  lng         Decimal  @db.Decimal(9, 6)
+  radiusM     Int      @default(500) @map("radius_m")
+  qrSecret    String   @map("qr_secret")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  agenda   Agenda     @relation(fields: [agendaId], references: [id])
+  pembuat  AkunAdsek  @relation(fields: [dibuatOleh], references: [id])
+  presensi Presensi[]
+
+  @@index([agendaId])
+  @@map("sesi_presensi")
+}
+
+model Presensi {
+  id        Int            @id @default(autoincrement())
+  sesiId    Int            @map("sesi_id")
+  stoId     Int            @map("sto_id")
+  waktuScan DateTime       @map("waktu_scan") @db.Timestamptz(6)
+  lat       Decimal        @db.Decimal(9, 6)
+  lng       Decimal        @db.Decimal(9, 6)
+  jarakM    Int            @map("jarak_m")
+  status    StatusPresensi
+
+  sesi SesiPresensi @relation(fields: [sesiId], references: [id])
+  sto  Sto          @relation(fields: [stoId], references: [id])
+
+  @@unique([sesiId, stoId])
+  @@index([stoId])
+  @@map("presensi")
+}
+
+// ─────────────────────────────────────────────
+// CATATAN MIGRASI (tidak bisa dinyatakan di Prisma)
+// ─────────────────────────────────────────────
+// 1. Hanya satu periode aktif pada satu waktu. Tambahkan lewat migrasi SQL manual
+//    (npx prisma migrate dev --create-only), lalu edit file migrasinya:
+//
+//      CREATE UNIQUE INDEX periode_satu_aktif
+//        ON periode (status) WHERE status = 'aktif';
+//
+// 2. Autentikasi memakai Firebase Authentication (bukan Auth.js). Password tidak
+//    disimpan di database ini. `firebase_uid` diisi saat login pertama (atau saat
+//    admin membuat akun lewat Firebase Admin SDK). Skema ini tidak memerlukan
+//    model Account/Session/VerificationToken.
+// 3. Satu email sebaiknya tidak ada di `akun_adsek` dan `STO` sekaligus. Jika
+//    terjadi, server memprioritaskan `akun_adsek`.
