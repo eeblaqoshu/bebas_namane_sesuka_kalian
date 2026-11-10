@@ -4,8 +4,9 @@ import { cookies } from "next/headers";
 import { adminAuth } from "./firebase-admin";
 import { prisma } from "./prisma";
 import { RoleAdsek, StatusPeriode } from "@prisma/client";
+import { SESSION_COOKIE_NAME } from "./konstanta";
 
-export const SESSION_COOKIE_NAME = "__session";
+export { SESSION_COOKIE_NAME };
 
 export interface UserSession {
   type: "adsek" | "sto";

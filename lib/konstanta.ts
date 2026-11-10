@@ -10,5 +10,8 @@ export const RADIUS_DEFAULT_M = 500;
 /** Durasi satu jendela waktu QR dinamis dalam detik (30 detik) */
 export const QR_WINDOW_SECONDS = 30;
 
+/** Nama cookie sesi Firebase (HTTP-only) */
+export const SESSION_COOKIE_NAME = "__session";
+
 /** Zona waktu resmi sistem */
 export const DEFAULT_TIMEZONE = "Asia/Jakarta";

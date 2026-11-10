@@ -197,7 +197,30 @@ Alur: klien login via Firebase dan mendapat ID token → dikirim ke API → serv
 6. **Rekap dan ekspor CSV**.
 7. **Pengujian dan deploy** (HTTPS).
 
-## 11. Pertanyaan terbuka
+## 11. Pembagian Pengerjaan Tim
+
+### Bagian Albi
+- **Modul A: Database & Autentikasi (On Progress)**
+  1. Skema & Database (Prisma, migrasi, seed data)
+  2. Integrasi Firebase Authentication (Google Auth STO, Email/Password Adsek, Session Cookie via Admin SDK)
+  3. Middleware & Proteksi Role (`/dashboard/*` untuk adsek, `/home|scan|profil` untuk STO)
+  4. Halaman Login (`/login`)
+- **Modul B: Master Data & Manajemen Organisasi**
+  1. Modul CRUD Periode Kepengurusan (`/dashboard/periode` - Admin only, status aktif/selesai read-only)
+  2. Modul CRUD Data STO & Impor CSV (`/dashboard/sto` - Admin only)
+  3. Modul CRUD Proker & Kepanitiaan (`/dashboard/proker` - peran PI, PJ, Anggota)
+  4. Modul CRUD Agenda Kegiatan (`/dashboard/proker/[id]` - jenis agenda, target peserta)
+
+### Bagian Labib
+- **Modul C: Presensi & Real-Time Dashboard**
+  1. API Sesi & Scan Presensi (Validasi 6 tahap, kalkulasi status hadir/terlambat, geolokasi 500m, HMAC QR 30s)
+  2. Dashboard Presensi (`/dashboard/presensi/[sesi]` - tampilan proyektor QR dinamis & live attendance feed)
+- **Modul D: Tampilan Web Presensi Buat Akses STO (Mobile-First)**
+  1. Halaman Beranda STO (`/home` - 3 tab status & filter hak akses)
+  2. Halaman Scanner Presensi (`/scan` - kamera QR scanner & koordinat GPS)
+  3. Halaman Profil STO (`/profil`)
+
+## 12. Pertanyaan terbuka
 
 - Batas "terlambat" tetap 15 menit atau dibuat per sesi (`batas_terlambat_menit`)?
 - Perlu waktu selesai agenda (`waktu_selesai`)?

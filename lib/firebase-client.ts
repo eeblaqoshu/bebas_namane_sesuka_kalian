@@ -1,7 +1,7 @@
 // lib/firebase-client.ts
-// Inisialisasi Firebase JS SDK untuk sisi browser / klien
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+// Inisialisasi Firebase JS SDK untuk sisi browser / klien (Lazy load agar aman saat Next.js prerender)
+import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
+import { getAuth, GoogleAuthProvider, Auth } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -10,6 +10,28 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-export const clientAuth = getAuth(app);
+let app: FirebaseApp | undefined;
+let clientAuth: Auth | undefined;
+
+export function getClientAuth(): Auth {
+  if (typeof window === "undefined") {
+    throw new Error("getClientAuth hanya dapat dipanggil di browser.");
+  }
+
+  if (!app) {
+    if (!firebaseConfig.apiKey) {
+      throw new Error(
+        "Kunci Firebase belum diatur di file .env (NEXT_PUBLIC_FIREBASE_API_KEY)."
+      );
+    }
+    app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+  }
+
+  if (!clientAuth) {
+    clientAuth = getAuth(app);
+  }
+
+  return clientAuth;
+}
+
 export const googleProvider = new GoogleAuthProvider();
