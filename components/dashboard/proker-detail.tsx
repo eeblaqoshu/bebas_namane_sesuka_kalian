@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   tambahPanitiaAction,
   ubahPanitiaAction,
@@ -681,335 +682,396 @@ export function ProkerDetail({
       {/* ─────────────────────────────────────────────
           MODAL TAMBAH PANITIA
       ───────────────────────────────────────────── */}
-      {modalPanitiaBuka && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy/50 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="w-full max-w-md bg-white border border-[#E2E8F0] rounded-2xl shadow-xl overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#E2E8F0] flex items-center justify-between">
-              <h3 className="text-sm font-bold text-primary">
-                Tambah Panitia ke Proker
-              </h3>
-              <button
-                onClick={() => setModalPanitiaBuka(false)}
-                className="text-slate-muted hover:text-navy"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+      <AnimatePresence>
+        {modalPanitiaBuka && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setModalPanitiaBuka(false)}
+              className="fixed inset-0 bg-navy/50 backdrop-blur-sm"
+            />
 
-            <form onSubmit={handleSubmitTambahPanitia} className="p-6 space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-navy mb-1">
-                  Pilih Pengurus STO
-                </label>
-                <select
-                  required
-                  value={pilihanStoId}
-                  onChange={(e) => setPilihanStoId(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white text-xs text-navy focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
-                >
-                  <option value="">-- Pilih Pengurus --</option>
-                  {stoBelumMasuk.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.nama} ({s.nim}) - {s.divisi || "Umum"}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-navy mb-1">
-                  Peran Panitia
-                </label>
-                <select
-                  value={peranPanitia}
-                  onChange={(e) => setPeranPanitia(e.target.value as PeranPanitia)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white text-xs text-navy focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
-                >
-                  <optgroup label="Pimpinan Inti (PI)">
-                    <option value={PeranPanitia.ketua}>Ketua Pelaksana</option>
-                    <option value={PeranPanitia.sekretaris}>Sekretaris</option>
-                    <option value={PeranPanitia.bendahara}>Bendahara</option>
-                  </optgroup>
-                  <optgroup label="Penanggung Jawab (PJ)">
-                    <option value={PeranPanitia.pj_divisi}>PJ Divisi</option>
-                  </optgroup>
-                  <optgroup label="Anggota">
-                    <option value={PeranPanitia.anggota}>Anggota Panitia</option>
-                  </optgroup>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-navy mb-1">
-                  Divisi Panitia (Opsional)
-                </label>
-                <input
-                  type="text"
-                  placeholder="Contoh: Divisi Acara, Humas, Konsumsi"
-                  value={divisiPanitia}
-                  onChange={(e) => setDivisiPanitia(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white text-xs text-navy focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
-                />
-              </div>
-
-              <div className="pt-2 flex items-center justify-end gap-2">
+            {/* Modal Dialog */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.94, y: 16 }}
+              transition={{ type: "spring", damping: 28, stiffness: 360 }}
+              className="relative w-full max-w-md bg-white border border-[#E2E8F0] rounded-2xl shadow-2xl overflow-hidden z-10"
+            >
+              <div className="px-6 py-4 border-b border-[#E2E8F0] flex items-center justify-between">
+                <h3 className="text-sm font-bold text-primary">
+                  Tambah Panitia ke Proker
+                </h3>
                 <button
-                  type="button"
                   onClick={() => setModalPanitiaBuka(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-medium text-slate-muted hover:bg-surface hover:text-navy"
+                  className="text-slate-muted hover:text-navy"
                 >
-                  Batal
-                </button>
-                <button
-                  type="submit"
-                  disabled={isPending}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-secondary hover:bg-primary text-white text-xs font-semibold disabled:opacity-60 shadow-md shadow-secondary/25"
-                >
-                  {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                  Simpan Panitia
+                  <X className="w-4 h-4" />
                 </button>
               </div>
-            </form>
+
+              <form onSubmit={handleSubmitTambahPanitia} className="p-6 space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-navy mb-1">
+                    Pilih Pengurus STO
+                  </label>
+                  <select
+                    required
+                    value={pilihanStoId}
+                    onChange={(e) => setPilihanStoId(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white text-xs text-navy focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
+                  >
+                    <option value="">-- Pilih Pengurus --</option>
+                    {stoBelumMasuk.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.nama} ({s.nim}) - {s.divisi || "Umum"}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-navy mb-1">
+                    Peran Panitia
+                  </label>
+                  <select
+                    value={peranPanitia}
+                    onChange={(e) => setPeranPanitia(e.target.value as PeranPanitia)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white text-xs text-navy focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
+                  >
+                    <optgroup label="Pimpinan Inti (PI)">
+                      <option value={PeranPanitia.ketua}>Ketua Pelaksana</option>
+                      <option value={PeranPanitia.sekretaris}>Sekretaris</option>
+                      <option value={PeranPanitia.bendahara}>Bendahara</option>
+                    </optgroup>
+                    <optgroup label="Penanggung Jawab (PJ)">
+                      <option value={PeranPanitia.pj_divisi}>PJ Divisi</option>
+                    </optgroup>
+                    <optgroup label="Anggota">
+                      <option value={PeranPanitia.anggota}>Anggota Panitia</option>
+                    </optgroup>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-navy mb-1">
+                    Divisi Panitia (Opsional)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: Divisi Acara, Humas, Konsumsi"
+                    value={divisiPanitia}
+                    onChange={(e) => setDivisiPanitia(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white text-xs text-navy focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
+                  />
+                </div>
+
+                <div className="pt-2 flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setModalPanitiaBuka(false)}
+                    className="px-4 py-2 rounded-xl text-xs font-medium text-slate-muted hover:bg-surface hover:text-navy"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isPending}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-secondary hover:bg-primary text-white text-xs font-semibold disabled:opacity-60 shadow-md shadow-secondary/25"
+                  >
+                    {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                    Simpan Panitia
+                  </button>
+                </div>
+              </form>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
 
       {/* ─────────────────────────────────────────────
           MODAL EDIT PANITIA
       ───────────────────────────────────────────── */}
-      {modalEditPanitiaBuka && panitiaDiedit && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy/50 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="w-full max-w-md bg-white border border-[#E2E8F0] rounded-2xl shadow-xl overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#E2E8F0] flex items-center justify-between">
-              <h3 className="text-sm font-bold text-primary">
-                Ubah Peran Panitia ({panitiaDiedit.sto.nama})
-              </h3>
-              <button
-                onClick={() => setModalEditPanitiaBuka(false)}
-                className="text-slate-muted hover:text-navy"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+      <AnimatePresence>
+        {modalEditPanitiaBuka && panitiaDiedit && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setModalEditPanitiaBuka(false)}
+              className="fixed inset-0 bg-navy/50 backdrop-blur-sm"
+            />
 
-            <form onSubmit={handleSubmitEditPanitia} className="p-6 space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-navy mb-1">
-                  Peran Panitia
-                </label>
-                <select
-                  value={peranPanitia}
-                  onChange={(e) => setPeranPanitia(e.target.value as PeranPanitia)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white text-xs text-navy focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
-                >
-                  <optgroup label="Pimpinan Inti (PI)">
-                    <option value={PeranPanitia.ketua}>Ketua Pelaksana</option>
-                    <option value={PeranPanitia.sekretaris}>Sekretaris</option>
-                    <option value={PeranPanitia.bendahara}>Bendahara</option>
-                  </optgroup>
-                  <optgroup label="Penanggung Jawab (PJ)">
-                    <option value={PeranPanitia.pj_divisi}>PJ Divisi</option>
-                  </optgroup>
-                  <optgroup label="Anggota">
-                    <option value={PeranPanitia.anggota}>Anggota Panitia</option>
-                  </optgroup>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-navy mb-1">
-                  Divisi Panitia (Opsional)
-                </label>
-                <input
-                  type="text"
-                  placeholder="Contoh: Divisi Acara, Humas, Konsumsi"
-                  value={divisiPanitia}
-                  onChange={(e) => setDivisiPanitia(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white text-xs text-navy focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
-                />
-              </div>
-
-              <div className="pt-2 flex items-center justify-end gap-2">
+            {/* Modal Dialog */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.94, y: 16 }}
+              transition={{ type: "spring", damping: 28, stiffness: 360 }}
+              className="relative w-full max-w-md bg-white border border-[#E2E8F0] rounded-2xl shadow-2xl overflow-hidden z-10"
+            >
+              <div className="px-6 py-4 border-b border-[#E2E8F0] flex items-center justify-between">
+                <h3 className="text-sm font-bold text-primary">
+                  Ubah Peran Panitia ({panitiaDiedit.sto.nama})
+                </h3>
                 <button
-                  type="button"
                   onClick={() => setModalEditPanitiaBuka(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-medium text-slate-muted hover:bg-surface hover:text-navy"
+                  className="text-slate-muted hover:text-navy"
                 >
-                  Batal
-                </button>
-                <button
-                  type="submit"
-                  disabled={isPending}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-secondary hover:bg-primary text-white text-xs font-semibold disabled:opacity-60 shadow-md shadow-secondary/25"
-                >
-                  {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                  Simpan Perubahan
+                  <X className="w-4 h-4" />
                 </button>
               </div>
-            </form>
+
+              <form onSubmit={handleSubmitEditPanitia} className="p-6 space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-navy mb-1">
+                    Peran Panitia
+                  </label>
+                  <select
+                    value={peranPanitia}
+                    onChange={(e) => setPeranPanitia(e.target.value as PeranPanitia)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white text-xs text-navy focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
+                  >
+                    <optgroup label="Pimpinan Inti (PI)">
+                      <option value={PeranPanitia.ketua}>Ketua Pelaksana</option>
+                      <option value={PeranPanitia.sekretaris}>Sekretaris</option>
+                      <option value={PeranPanitia.bendahara}>Bendahara</option>
+                    </optgroup>
+                    <optgroup label="Penanggung Jawab (PJ)">
+                      <option value={PeranPanitia.pj_divisi}>PJ Divisi</option>
+                    </optgroup>
+                    <optgroup label="Anggota">
+                      <option value={PeranPanitia.anggota}>Anggota Panitia</option>
+                    </optgroup>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-navy mb-1">
+                    Divisi Panitia (Opsional)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: Divisi Acara, Humas, Konsumsi"
+                    value={divisiPanitia}
+                    onChange={(e) => setDivisiPanitia(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white text-xs text-navy focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
+                  />
+                </div>
+
+                <div className="pt-2 flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setModalEditPanitiaBuka(false)}
+                    className="px-4 py-2 rounded-xl text-xs font-medium text-slate-muted hover:bg-surface hover:text-navy"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isPending}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-secondary hover:bg-primary text-white text-xs font-semibold disabled:opacity-60 shadow-md shadow-secondary/25"
+                  >
+                    {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                    Simpan Perubahan
+                  </button>
+                </div>
+              </form>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
 
       {/* ─────────────────────────────────────────────
           MODAL TAMBAH / EDIT AGENDA
       ───────────────────────────────────────────── */}
-      {(modalAgendaBuka || modalEditAgendaBuka) && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy/50 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="w-full max-w-lg bg-white border border-[#E2E8F0] rounded-2xl shadow-xl overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#E2E8F0] flex items-center justify-between">
-              <h3 className="text-sm font-bold text-primary">
-                {modalAgendaBuka ? "Tambah Agenda Kegiatan Baru" : "Edit Agenda Kegiatan"}
-              </h3>
-              <button
-                onClick={() => {
-                  setModalAgendaBuka(false);
-                  setModalEditAgendaBuka(false);
-                  resetFormAgenda();
-                }}
-                className="text-slate-muted hover:text-navy"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+      <AnimatePresence>
+        {(modalAgendaBuka || modalEditAgendaBuka) && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => {
+                setModalAgendaBuka(false);
+                setModalEditAgendaBuka(false);
+                resetFormAgenda();
+              }}
+              className="fixed inset-0 bg-navy/50 backdrop-blur-sm"
+            />
 
-            <form
-              onSubmit={modalAgendaBuka ? handleSubmitTambahAgenda : handleSubmitEditAgenda}
-              className="p-6 space-y-4"
+            {/* Modal Dialog */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.94, y: 16 }}
+              transition={{ type: "spring", damping: 28, stiffness: 360 }}
+              className="relative w-full max-w-lg bg-white border border-[#E2E8F0] rounded-2xl shadow-2xl overflow-hidden z-10"
             >
-              <div>
-                <label className="block text-xs font-semibold text-navy mb-1">
-                  Judul Agenda
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Contoh: Rapat Pleno 1 Persiapan Lomba"
-                  value={judulAgenda}
-                  onChange={(e) => setJudulAgenda(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white text-xs text-navy focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-navy mb-1">
-                    Jenis Agenda
-                  </label>
-                  <select
-                    value={jenisAgenda}
-                    onChange={(e) => setJenisAgenda(e.target.value as JenisAgenda)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white text-xs text-navy focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
-                  >
-                    <option value={JenisAgenda.rapat_pj}>Rapat PJ & PI</option>
-                    <option value={JenisAgenda.rapat_besar}>Rapat Besar</option>
-                    <option value={JenisAgenda.rapat_koordinasi}>Rapat Koordinasi</option>
-                    <option value={JenisAgenda.hari_h}>Hari H Pelaksanaan</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-navy mb-1">
-                    Urutan Agenda
-                  </label>
-                  <input
-                    type="number"
-                    min={1}
-                    value={urutanAgenda}
-                    onChange={(e) => setUrutanAgenda(parseInt(e.target.value) || 1)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white text-xs text-navy focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-navy mb-1">
-                    Tanggal Pelaksanaan
-                  </label>
-                  <input
-                    type="date"
-                    required
-                    value={tglAgenda}
-                    onChange={(e) => setTglAgenda(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white text-xs text-navy focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-navy mb-1">
-                    Jam Mulai (WIB)
-                  </label>
-                  <input
-                    type="time"
-                    required
-                    value={waktuAgenda}
-                    onChange={(e) => setWaktuAgenda(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white text-xs text-navy focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-navy mb-1">
-                  Target Peserta (Akses Presensi)
-                </label>
-                <select
-                  value={targetPeserta}
-                  onChange={(e) => setTargetPeserta(e.target.value as TargetPeserta)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white text-xs text-navy focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
-                >
-                  <option value={TargetPeserta.hanya_pj_pi}>
-                    hanya_pj_pi (Hanya Panitia berstatus PJ dan PI)
-                  </option>
-                  <option value={TargetPeserta.semua_panitia}>
-                    semua_panitia (Seluruh panitia terdaftar di proker ini)
-                  </option>
-                  <option value={TargetPeserta.semua_panitia_sto}>
-                    semua_panitia_sto (Semua anggota STO satu periode)
-                  </option>
-                </select>
-                <p className="text-[10px] text-slate-muted mt-1">
-                  Aturan akses ini menentukan siapa saja yang dapat melihat agenda ini di /home dan melakukan scan presensi.
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-navy mb-1">
-                  Lokasi Pertemuan (Opsional)
-                </label>
-                <input
-                  type="text"
-                  placeholder="Contoh: Ruang Sidang Utama Lt. 2 / Google Meet"
-                  value={lokasiAgenda}
-                  onChange={(e) => setLokasiAgenda(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white text-xs text-navy focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
-                />
-              </div>
-
-              <div className="pt-2 flex items-center justify-end gap-2">
+              <div className="px-6 py-4 border-b border-[#E2E8F0] flex items-center justify-between">
+                <h3 className="text-sm font-bold text-primary">
+                  {modalAgendaBuka ? "Tambah Agenda Kegiatan Baru" : "Edit Agenda Kegiatan"}
+                </h3>
                 <button
-                  type="button"
                   onClick={() => {
                     setModalAgendaBuka(false);
                     setModalEditAgendaBuka(false);
                     resetFormAgenda();
                   }}
-                  className="px-4 py-2 rounded-xl text-xs font-medium text-slate-muted hover:bg-surface hover:text-navy"
+                  className="text-slate-muted hover:text-navy"
                 >
-                  Batal
-                </button>
-                <button
-                  type="submit"
-                  disabled={isPending}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-secondary hover:bg-primary text-white text-xs font-semibold disabled:opacity-60 shadow-md shadow-secondary/25"
-                >
-                  {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                  Simpan Agenda
+                  <X className="w-4 h-4" />
                 </button>
               </div>
-            </form>
+
+              <form
+                onSubmit={modalAgendaBuka ? handleSubmitTambahAgenda : handleSubmitEditAgenda}
+                className="p-6 space-y-4"
+              >
+                <div>
+                  <label className="block text-xs font-semibold text-navy mb-1">
+                    Judul Agenda
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Contoh: Rapat Pleno 1 Persiapan Lomba"
+                    value={judulAgenda}
+                    onChange={(e) => setJudulAgenda(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white text-xs text-navy focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-navy mb-1">
+                      Jenis Agenda
+                    </label>
+                    <select
+                      value={jenisAgenda}
+                      onChange={(e) => setJenisAgenda(e.target.value as JenisAgenda)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white text-xs text-navy focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
+                    >
+                      <option value={JenisAgenda.rapat_pj}>Rapat PJ & PI</option>
+                      <option value={JenisAgenda.rapat_besar}>Rapat Besar</option>
+                      <option value={JenisAgenda.rapat_koordinasi}>Rapat Koordinasi</option>
+                      <option value={JenisAgenda.hari_h}>Hari H Pelaksanaan</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-navy mb-1">
+                      Urutan Agenda
+                    </label>
+                    <input
+                      type="number"
+                      min={1}
+                      value={urutanAgenda}
+                      onChange={(e) => setUrutanAgenda(parseInt(e.target.value) || 1)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white text-xs text-navy focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-navy mb-1">
+                      Tanggal Pelaksanaan
+                    </label>
+                    <input
+                      type="date"
+                      required
+                      value={tglAgenda}
+                      onChange={(e) => setTglAgenda(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white text-xs text-navy focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-navy mb-1">
+                      Jam Mulai (WIB)
+                    </label>
+                    <input
+                      type="time"
+                      required
+                      value={waktuAgenda}
+                      onChange={(e) => setWaktuAgenda(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white text-xs text-navy focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-navy mb-1">
+                    Target Peserta (Akses Presensi)
+                  </label>
+                  <select
+                    value={targetPeserta}
+                    onChange={(e) => setTargetPeserta(e.target.value as TargetPeserta)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white text-xs text-navy focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
+                  >
+                    <option value={TargetPeserta.hanya_pj_pi}>
+                      hanya_pj_pi (Hanya Panitia berstatus PJ dan PI)
+                    </option>
+                    <option value={TargetPeserta.semua_panitia}>
+                      semua_panitia (Seluruh panitia terdaftar di proker ini)
+                    </option>
+                    <option value={TargetPeserta.semua_panitia_sto}>
+                      semua_panitia_sto (Semua anggota STO satu periode)
+                    </option>
+                  </select>
+                  <p className="text-[10px] text-slate-muted mt-1">
+                    Aturan akses ini menentukan siapa saja yang dapat melihat agenda ini di /home dan melakukan scan presensi.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-navy mb-1">
+                    Lokasi Pertemuan (Opsional)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: Ruang Sidang Utama Lt. 2 / Google Meet"
+                    value={lokasiAgenda}
+                    onChange={(e) => setLokasiAgenda(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white text-xs text-navy focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
+                  />
+                </div>
+
+                <div className="pt-2 flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setModalAgendaBuka(false);
+                      setModalEditAgendaBuka(false);
+                      resetFormAgenda();
+                    }}
+                    className="px-4 py-2 rounded-xl text-xs font-medium text-slate-muted hover:bg-surface hover:text-navy"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isPending}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-secondary hover:bg-primary text-white text-xs font-semibold disabled:opacity-60 shadow-md shadow-secondary/25"
+                  >
+                    {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                    Simpan Agenda
+                  </button>
+                </div>
+              </form>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </div>
   );
 }

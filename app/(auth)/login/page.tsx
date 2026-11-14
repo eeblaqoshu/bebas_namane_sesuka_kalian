@@ -90,6 +90,10 @@ export default function LoginPage() {
           err.message.includes("auth/user-not-found")
         ) {
           setErrorMsg("Alamat email atau kata sandi tidak valid.");
+        } else if (err.message.includes("auth/operation-not-allowed")) {
+          setErrorMsg(
+            "Provider 'Email/Password' belum diaktifkan di Firebase Console. Buka Firebase Console > Authentication > Sign-in method, lalu aktifkan 'Email/Password'.",
+          );
         } else {
           setErrorMsg(err.message);
         }
