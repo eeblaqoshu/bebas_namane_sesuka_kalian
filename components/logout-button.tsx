@@ -24,7 +24,7 @@ export function LogoutButton({ className = "" }: { className?: string }) {
     <button
       onClick={handleLogout}
       disabled={loading}
-      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all ${className}`}
+      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-all ${className}`}
     >
       {loading ? (
         <Loader2 className="w-3.5 h-3.5 animate-spin" />

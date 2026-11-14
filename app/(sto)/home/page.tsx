@@ -111,12 +111,12 @@ export default async function StoHomePage() {
     .toUpperCase();
 
   return (
-    <div className="min-h-screen bg-[#FBFBFB] dark:bg-[#0A0A0A] font-sans text-zinc-900 dark:text-zinc-100 antialiased pb-16">
+    <div className="min-h-screen bg-surface font-sans text-navy antialiased pb-16">
       {/* Top Navbar Desktop & Mobile */}
-      <header className="sticky top-0 z-30 bg-white/85 dark:bg-[#121212]/85 backdrop-blur-md border-b border-zinc-200/80 dark:border-zinc-800/80">
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#E2E8F0] shadow-[0_1px_3px_rgba(11,42,91,0.04)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="relative w-10 h-10 rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-white p-0.5 shrink-0 shadow-sm">
+            <div className="relative w-10 h-10 rounded-xl overflow-hidden border border-[#E2E8F0] bg-white p-0.5 shrink-0 shadow-sm">
               <Image
                 src="/logo-pcc.png"
                 alt="Logo UKM PCC"
@@ -127,18 +127,18 @@ export default async function StoHomePage() {
               />
             </div>
             <div>
-              <h1 className="text-sm font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+              <h1 className="text-sm font-bold tracking-tight text-primary">
                 Presensi STO
               </h1>
-              <p className="text-[11px] text-zinc-500 font-normal">
+              <p className="text-[11px] text-slate-muted font-normal">
                 Polytechnic Computer Club • Polines
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-900/60">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-accent/20 text-primary border border-accent/40">
+              <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
               {periode?.nama || "Periode Aktif"}
             </span>
             <LogoutButton />
@@ -152,11 +152,11 @@ export default async function StoHomePage() {
           {/* Kolom Kiri: Profil & Quick Action (Desktop 4/12, Mobile Full) */}
           <aside className="lg:col-span-4 space-y-5">
             {/* Kartu Profil STO dengan Tempat Foto Resmi */}
-            <div className="p-6 rounded-3xl bg-white dark:bg-[#121212] border border-zinc-200/80 dark:border-zinc-800 shadow-[0_4px_20px_rgb(0,0,0,0.03)] space-y-5">
+            <div className="p-6 rounded-3xl bg-white border border-[#E2E8F0] shadow-sm space-y-5">
               <div className="flex items-start justify-between gap-4">
                 {/* Tempat Foto STO (Photo Slot) */}
                 <div className="relative group">
-                  <div className="w-20 h-20 rounded-2xl border-2 border-zinc-200 dark:border-zinc-700/80 bg-zinc-100 dark:bg-zinc-800 shadow-sm overflow-hidden flex items-center justify-center relative">
+                  <div className="w-20 h-20 rounded-2xl border-2 border-[#CBD5E1] bg-surface shadow-sm overflow-hidden flex items-center justify-center relative">
                     {sto.foto ? (
                       <Image
                         src={sto.foto}
@@ -166,7 +166,7 @@ export default async function StoHomePage() {
                         sizes="80px"
                       />
                     ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-700 text-white font-bold text-xl tracking-wider select-none">
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-primary to-secondary text-white font-bold text-xl tracking-wider select-none">
                         <span>{inisialNama || "STO"}</span>
                       </div>
                     )}
@@ -175,34 +175,34 @@ export default async function StoHomePage() {
                   {/* Icon Indikator Foto */}
                   <div
                     title="Foto Pengurus STO"
-                    className="absolute -bottom-1 -right-1 w-6 h-6 rounded-lg bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 flex items-center justify-center shadow-md border-2 border-white dark:border-[#121212]"
+                    className="absolute -bottom-1 -right-1 w-6 h-6 rounded-lg bg-secondary text-white flex items-center justify-center shadow-md border-2 border-white"
                   >
                     <Camera className="w-3 h-3" />
                   </div>
                 </div>
 
-                <span className="px-3 py-1 rounded-full text-[10px] font-semibold bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 border border-blue-200/50 dark:border-blue-900/50 shrink-0">
+                <span className="px-3 py-1 rounded-full text-[10px] font-semibold bg-accent/20 text-primary border border-accent/40 shrink-0">
                   Pengurus Aktif
                 </span>
               </div>
 
               <div>
-                <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
+                <h2 className="text-lg font-bold text-primary tracking-tight">
                   {sto.nama}
                 </h2>
-                <p className="text-xs text-zinc-500 mt-0.5 font-mono">{sto.nim}</p>
+                <p className="text-xs text-slate-muted mt-0.5 font-mono">{sto.nim}</p>
               </div>
 
-              <div className="pt-3.5 border-t border-zinc-100 dark:border-zinc-800/80 grid grid-cols-2 gap-3 text-xs">
+              <div className="pt-3.5 border-t border-[#E2E8F0] grid grid-cols-2 gap-3 text-xs">
                 <div>
-                  <p className="text-[11px] text-zinc-400">Divisi</p>
-                  <p className="font-semibold text-zinc-800 dark:text-zinc-200 mt-0.5 truncate">
+                  <p className="text-[11px] text-slate-muted">Divisi</p>
+                  <p className="font-semibold text-navy mt-0.5 truncate">
                     {sto.divisi || "Pengurus Harian"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-[11px] text-zinc-400">Jabatan</p>
-                  <p className="font-semibold text-zinc-800 dark:text-zinc-200 mt-0.5 truncate">
+                  <p className="text-[11px] text-slate-muted">Jabatan</p>
+                  <p className="font-semibold text-navy mt-0.5 truncate">
                     {sto.jabatan || "Pengurus"}
                   </p>
                 </div>
@@ -212,49 +212,49 @@ export default async function StoHomePage() {
             {/* Quick Action: Scan QR Presensi */}
             <Link
               href="/scan"
-              className="group block p-5 rounded-3xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 shadow-md hover:shadow-lg transition-all"
+              className="group block p-5 rounded-3xl bg-primary hover:bg-secondary text-white shadow-md shadow-primary/20 hover:shadow-lg transition-all"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3.5">
-                  <div className="w-11 h-11 rounded-2xl bg-white/10 dark:bg-zinc-900/10 flex items-center justify-center text-white dark:text-zinc-900">
-                    <QrCode className="w-5 h-5" />
+                  <div className="w-11 h-11 rounded-2xl bg-white/15 flex items-center justify-center text-white">
+                    <QrCode className="w-5 h-5 text-accent" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold tracking-tight">
+                    <h3 className="text-sm font-bold tracking-tight">
                       Scan QR Presensi
                     </h3>
-                    <p className="text-[11px] text-zinc-400 dark:text-zinc-600 mt-0.5">
+                    <p className="text-[11px] text-accent/90 mt-0.5">
                       Buka scanner kamera & GPS
                     </p>
                   </div>
                 </div>
-                <span className="w-7 h-7 rounded-full bg-white/10 dark:bg-zinc-900/10 flex items-center justify-center text-xs font-semibold group-hover:translate-x-1 transition-transform">
+                <span className="w-7 h-7 rounded-full bg-white/15 flex items-center justify-center text-xs font-semibold group-hover:translate-x-1 transition-transform">
                   →
                 </span>
               </div>
             </Link>
 
             {/* Ringkasan Kehadiran */}
-            <div className="p-5 rounded-3xl bg-white dark:bg-[#121212] border border-zinc-200/80 dark:border-zinc-800 shadow-[0_4px_20px_rgb(0,0,0,0.03)] space-y-3">
-              <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+            <div className="p-5 rounded-3xl bg-white border border-[#E2E8F0] shadow-sm space-y-3">
+              <h4 className="text-xs font-bold text-slate-muted uppercase tracking-wider">
                 Statistik Kehadiran
               </h4>
               <div className="grid grid-cols-2 gap-3 pt-1">
-                <div className="p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800">
-                  <div className="flex items-center gap-1.5 text-emerald-600 text-xs mb-1">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span className="font-medium">Tepat Waktu</span>
+                <div className="p-3.5 rounded-2xl bg-accent/15 border border-accent/30">
+                  <div className="flex items-center gap-1.5 text-secondary text-xs mb-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-secondary" />
+                    <span className="font-bold">Tepat Waktu</span>
                   </div>
-                  <p className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
+                  <p className="text-xl font-bold text-primary">
                     {hadirCount}
                   </p>
                 </div>
-                <div className="p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800">
-                  <div className="flex items-center gap-1.5 text-amber-600 text-xs mb-1">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span className="font-medium">Terlambat</span>
+                <div className="p-3.5 rounded-2xl bg-highlight/15 border border-highlight/30">
+                  <div className="flex items-center gap-1.5 text-[#B45309] text-xs mb-1">
+                    <Clock className="w-3.5 h-3.5 text-[#B45309]" />
+                    <span className="font-bold">Terlambat</span>
                   </div>
-                  <p className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
+                  <p className="text-xl font-bold text-[#B45309]">
                     {telatCount}
                   </p>
                 </div>
@@ -265,25 +265,25 @@ export default async function StoHomePage() {
           {/* Kolom Kanan: Daftar Agenda Kegiatan (Desktop 8/12, Mobile Full) */}
           <section className="lg:col-span-8 space-y-5">
             {/* Banner Salam & Status Periode */}
-            <div className="p-6 rounded-3xl bg-white dark:bg-[#121212] border border-zinc-200/80 dark:border-zinc-800 shadow-[0_4px_20px_rgb(0,0,0,0.03)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="p-6 rounded-3xl bg-white border border-[#E2E8F0] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <Sparkles className="w-4 h-4 text-amber-500" />
-                  <span className="text-xs font-semibold text-zinc-500">
+                  <Sparkles className="w-4 h-4 text-highlight" />
+                  <span className="text-xs font-semibold text-slate-muted">
                     Portal Kehadiran Pengurus
                   </span>
                 </div>
-                <h2 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+                <h2 className="text-xl font-bold tracking-tight text-primary">
                   Agenda Kepengurusan PCC
                 </h2>
-                <p className="text-xs text-zinc-500 mt-1">
+                <p className="text-xs text-slate-muted mt-1">
                   Daftar agenda kegiatan yang disesuaikan dengan divisi dan kepanitiaan Anda.
                 </p>
               </div>
 
               <div className="shrink-0 flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 text-xs font-medium border border-blue-200/60 dark:border-blue-900/60">
-                  <Shield className="w-3.5 h-3.5" />
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 text-primary text-xs font-semibold border border-primary/20">
+                  <Shield className="w-3.5 h-3.5 text-secondary" />
                   STO Terverifikasi
                 </span>
               </div>

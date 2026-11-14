@@ -21,10 +21,11 @@ export async function POST(req: NextRequest) {
         {
           error: {
             kode: "SERVER_CONFIG_ERROR",
-            pesan: "Konfigurasi Firebase Admin di server belum lengkap. Silakan hubungi admin.",
+            pesan:
+              "Konfigurasi Firebase Admin di server belum lengkap. Silakan hubungi Tim Kelola",
           },
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -39,7 +40,7 @@ export async function POST(req: NextRequest) {
             pesan: parsed.error.issues[0]?.message || "Input tidak valid",
           },
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -55,10 +56,11 @@ export async function POST(req: NextRequest) {
         {
           error: {
             kode: "TOKEN_INVALID",
-            pesan: "Sesi login kedaluwarsa atau token tidak valid. Silakan login kembali.",
+            pesan:
+              "Sesi login kedaluwarsa atau token tidak valid. Silakan login kembali.",
           },
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -73,7 +75,7 @@ export async function POST(req: NextRequest) {
             pesan: "Akun Anda tidak memiliki alamat email yang valid.",
           },
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -107,10 +109,11 @@ export async function POST(req: NextRequest) {
           {
             error: {
               kode: "PERIODE_TIDAK_AKTIF",
-              pesan: "Saat ini belum ada periode kepengurusan yang berstatus aktif.",
+              pesan:
+                "Saat ini belum ada periode kepengurusan yang berstatus aktif.",
             },
           },
-          { status: 403 }
+          { status: 403 },
         );
       }
 
@@ -141,10 +144,11 @@ export async function POST(req: NextRequest) {
         {
           error: {
             kode: "EMAIL_TIDAK_TERDAFTAR",
-            pesan: "Email Anda belum terdaftar sebagai pengurus STO periode aktif atau adsek.",
+            pesan:
+              "Email Anda belum terdaftar sebagai pengurus STO periode aktif atau adsek.",
           },
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -180,7 +184,7 @@ export async function POST(req: NextRequest) {
           pesan: "Terjadi kesalahan internal saat memproses autentikasi.",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

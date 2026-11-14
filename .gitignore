@@ -48,3 +48,7 @@ ehthumbs.db
 #lainnya
 .vscode/
 .idea/
+.agents
+.claude
+.cursor
+.devin

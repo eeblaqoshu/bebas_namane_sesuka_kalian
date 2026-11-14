@@ -38,7 +38,9 @@ export default function LoginPage() {
     const data = await res.json();
 
     if (!res.ok) {
-      throw new Error(data.error?.pesan || "Terjadi kesalahan saat memverifikasi sesi");
+      throw new Error(
+        data.error?.pesan || "Terjadi kesalahan saat memverifikasi sesi",
+      );
     }
 
     router.push(data.redirectUrl || "/");
@@ -88,6 +90,10 @@ export default function LoginPage() {
           err.message.includes("auth/user-not-found")
         ) {
           setErrorMsg("Alamat email atau kata sandi tidak valid.");
+        } else if (err.message.includes("auth/operation-not-allowed")) {
+          setErrorMsg(
+            "Provider 'Email/Password' belum diaktifkan di Firebase Console. Buka Firebase Console > Authentication > Sign-in method, lalu aktifkan 'Email/Password'.",
+          );
         } else {
           setErrorMsg(err.message);
         }
@@ -127,22 +133,22 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-[#FAFAFA] dark:bg-[#0A0A0A] p-4 sm:p-6 font-sans selection:bg-zinc-900 selection:text-white dark:selection:bg-white dark:selection:text-zinc-900 antialiased">
-      {/* Background Ambience (Minimalist subtle glow) */}
+    <div className="relative min-h-screen flex items-center justify-center bg-surface p-4 sm:p-6 font-sans selection:bg-primary selection:text-white antialiased">
+      {/* Background Ambience (Subtle brand glow) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[540px] h-[540px] bg-gradient-to-tr from-blue-100/40 via-zinc-100/60 to-transparent dark:from-blue-950/20 dark:via-zinc-900/40 dark:to-transparent rounded-full blur-3xl opacity-70" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[540px] h-[540px] bg-gradient-to-tr from-secondary/15 via-accent/10 to-transparent rounded-full blur-3xl opacity-70" />
       </div>
 
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-        className="w-full max-w-[410px] bg-white dark:bg-[#121212] rounded-2xl border border-zinc-200/70 dark:border-zinc-800/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] overflow-hidden"
+        className="w-full max-w-[410px] bg-white rounded-2xl border border-[#E2E8F0] shadow-[0_8px_30px_rgba(11,42,91,0.06)] overflow-hidden"
       >
         {/* Header Section */}
         <div className="px-8 pt-8 pb-5 text-center">
           {/* Logo Resmi UKM PCC */}
-          <div className="relative w-12 h-12 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-white p-0.5 mx-auto mb-3.5 shadow-sm">
+          <div className="relative w-12 h-12 rounded-2xl overflow-hidden border border-[#E2E8F0] bg-white p-0.5 mx-auto mb-3.5 shadow-sm">
             <Image
               src="/logo-pcc.png"
               alt="Logo UKM PCC"
@@ -153,25 +159,25 @@ export default function LoginPage() {
             />
           </div>
 
-          <h1 className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
+          <h1 className="text-lg font-bold tracking-tight text-primary">
             Sistem Presensi STO
           </h1>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 font-normal">
+          <p className="text-xs text-slate-muted mt-1 font-normal">
             Polytechnic Computer Club • Polines
           </p>
 
           {/* Segmented Control Switcher */}
-          <div className="mt-6 p-1 bg-zinc-100/80 dark:bg-zinc-800/60 rounded-xl relative grid grid-cols-2">
+          <div className="mt-6 p-1 bg-surface border border-[#E2E8F0] rounded-xl relative grid grid-cols-2">
             <button
               type="button"
               onClick={() => handleTabChange("sto")}
               className="relative z-10 py-2 rounded-lg text-xs font-medium transition-colors duration-200 focus:outline-none"
             >
               <span
-                className={`transition-colors duration-200 ${
+                className={`relative z-10 transition-colors duration-200 ${
                   activeTab === "sto"
-                    ? "text-zinc-900 dark:text-white font-semibold"
-                    : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
+                    ? "text-primary font-bold"
+                    : "text-slate-muted hover:text-navy"
                 }`}
               >
                 Pengurus STO
@@ -180,7 +186,7 @@ export default function LoginPage() {
                 <motion.div
                   layoutId="activeTabIndicator"
                   transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                  className="absolute inset-0 bg-white dark:bg-[#1C1C1C] rounded-lg shadow-sm border border-zinc-200/50 dark:border-zinc-700/50 -z-10"
+                  className="absolute inset-0 bg-white rounded-lg shadow-sm border border-[#E2E8F0] z-0"
                 />
               )}
             </button>
@@ -191,10 +197,10 @@ export default function LoginPage() {
               className="relative z-10 py-2 rounded-lg text-xs font-medium transition-colors duration-200 focus:outline-none"
             >
               <span
-                className={`transition-colors duration-200 ${
+                className={`relative z-10 transition-colors duration-200 ${
                   activeTab === "adsek"
-                    ? "text-zinc-900 dark:text-white font-semibold"
-                    : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
+                    ? "text-primary font-bold"
+                    : "text-slate-muted hover:text-navy"
                 }`}
               >
                 Adsek / Inti
@@ -203,7 +209,7 @@ export default function LoginPage() {
                 <motion.div
                   layoutId="activeTabIndicator"
                   transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                  className="absolute inset-0 bg-white dark:bg-[#1C1C1C] rounded-lg shadow-sm border border-zinc-200/50 dark:border-zinc-700/50 -z-10"
+                  className="absolute inset-0 bg-white rounded-lg shadow-sm border border-[#E2E8F0] z-0"
                 />
               )}
             </button>
@@ -219,8 +225,8 @@ export default function LoginPage() {
               exit={{ opacity: 0, height: 0, marginBottom: 0 }}
               className="px-8 overflow-hidden"
             >
-              <div className="p-3 rounded-xl bg-red-50/80 dark:bg-red-950/30 border border-red-200/70 dark:border-red-900/50 text-red-600 dark:text-red-400 text-xs flex items-start gap-2.5">
-                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-500" />
+              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2.5">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
                 <span className="leading-relaxed">{errorMsg}</span>
               </div>
             </motion.div>
@@ -240,8 +246,12 @@ export default function LoginPage() {
                 exit="exit"
                 className="px-8 pb-8 space-y-4"
               >
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 text-center leading-relaxed">
-                  Gunakan akun Google mahasiswa resmi yang terdaftar pada kepengurusan aktif.
+                <p className="text-xs text-slate-muted text-center leading-relaxed">
+                  Gunakan akun Google mahasiswa resmi (
+                  <span className="font-semibold text-primary">
+                    @mhs.polines.ac.id
+                  </span>
+                  ) yang terdaftar pada kepengurusan aktif.
                 </p>
 
                 <motion.button
@@ -250,11 +260,11 @@ export default function LoginPage() {
                   type="button"
                   disabled={loading}
                   onClick={handleLoginGoogle}
-                  className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 text-zinc-800 dark:text-zinc-200 font-medium text-xs transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
+                  className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl border border-[#CBD5E1] bg-white hover:bg-surface text-navy font-semibold text-xs transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
                 >
                   {loading ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin text-zinc-500" />
+                      <Loader2 className="w-4 h-4 animate-spin text-secondary" />
                       <span>Memverifikasi akun...</span>
                     </>
                   ) : (
@@ -294,35 +304,35 @@ export default function LoginPage() {
               >
                 <form onSubmit={handleLoginAdsek} className="space-y-3.5">
                   <div>
-                    <label className="block text-[11px] font-medium text-zinc-600 dark:text-zinc-400 mb-1">
+                    <label className="block text-[11px] font-semibold text-navy mb-1">
                       Email Adsek
                     </label>
                     <div className="relative">
-                      <Mail className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <Mail className="w-3.5 h-3.5 text-slate-muted absolute left-3 top-1/2 -translate-y-1/2" />
                       <input
                         type="email"
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="admin@pcc.polines.ac.id"
-                        className="w-full pl-9 pr-3.5 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/60 dark:bg-zinc-900/60 text-zinc-900 dark:text-zinc-100 text-xs focus:outline-none focus:bg-white dark:focus:bg-zinc-900 focus:border-zinc-900 dark:focus:border-zinc-400 transition-all placeholder:text-zinc-400"
+                        className="w-full pl-9 pr-3.5 py-2 rounded-xl border border-[#CBD5E1] bg-surface/50 text-navy text-xs focus:outline-none focus:bg-white focus:border-secondary focus:ring-1 focus:ring-secondary transition-all placeholder:text-slate-muted"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-medium text-zinc-600 dark:text-zinc-400 mb-1">
+                    <label className="block text-[11px] font-semibold text-navy mb-1">
                       Kata Sandi
                     </label>
                     <div className="relative">
-                      <Lock className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <Lock className="w-3.5 h-3.5 text-slate-muted absolute left-3 top-1/2 -translate-y-1/2" />
                       <input
                         type="password"
                         required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="w-full pl-9 pr-3.5 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/60 dark:bg-zinc-900/60 text-zinc-900 dark:text-zinc-100 text-xs focus:outline-none focus:bg-white dark:focus:bg-zinc-900 focus:border-zinc-900 dark:focus:border-zinc-400 transition-all placeholder:text-zinc-400"
+                        className="w-full pl-9 pr-3.5 py-2 rounded-xl border border-[#CBD5E1] bg-surface/50 text-navy text-xs focus:outline-none focus:bg-white focus:border-secondary focus:ring-1 focus:ring-secondary transition-all placeholder:text-slate-muted"
                       />
                     </div>
                   </div>
@@ -332,7 +342,7 @@ export default function LoginPage() {
                     whileTap={{ scale: 0.985 }}
                     type="submit"
                     disabled={loading}
-                    className="w-full mt-2 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-zinc-900 hover:bg-black dark:bg-white dark:hover:bg-zinc-100 text-white dark:text-zinc-900 font-medium text-xs transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                    className="w-full mt-2 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-primary hover:bg-secondary text-white font-semibold text-xs transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-primary/20"
                   >
                     {loading ? (
                       <>
@@ -350,15 +360,6 @@ export default function LoginPage() {
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
-
-        {/* Minimalist Status Footer */}
-        <div className="px-8 py-3.5 bg-zinc-50/70 dark:bg-zinc-900/50 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-[11px] text-zinc-400">
-          <div className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            <span>Sistem Presensi v1.0</span>
-          </div>
-          <span>UKM PCC</span>
         </div>
       </motion.div>
     </div>

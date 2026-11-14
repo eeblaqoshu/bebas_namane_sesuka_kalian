@@ -1,6 +1,6 @@
 # PRD: Sistem Presensi Pengurus Organisasi
 
-Versi 1.0 | Status: Draft siap dikembangkan | Stack: Next.js, PostgreSQL, Tailwind CSS
+Versi 1.0 | Status: Siap dikembangkan | Stack: Next.js, MySQL, Tailwind CSS
 
 ## 1. Ringkasan
 
@@ -40,7 +40,7 @@ periode ─┬─< STO
 akun_adsek ── dibuat_oleh (proker, agenda, sesi_presensi)
 ```
 
-Keputusan arsitektur: **satu database PostgreSQL** dengan tabel `periode`. Pergantian periode = admin menutup periode aktif (status `selesai`, data menjadi read-only) lalu membuat periode baru. Tidak membuat database fisik baru per periode.
+Keputusan arsitektur: **satu database MySQL** dengan tabel `periode`. Pergantian periode = admin menutup periode aktif (status `selesai`, data menjadi read-only) lalu membuat periode baru. Tidak membuat database fisik baru per periode.
 
 ### Skema tabel
 

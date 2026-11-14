@@ -7,27 +7,23 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
 // ─────────────────────────────────────────────
-// ENUM
+// ENUM (Native MySQL ENUM)
 // ─────────────────────────────────────────────
 
 enum StatusPeriode {
   aktif
   selesai
-
-  @@map("status_periode")
 }
 
 enum RoleAdsek {
   admin
   sekretaris_umum
   sekretaris_inti
-
-  @@map("role_adsek")
 }
 
 enum PeranPanitia {
@@ -36,8 +32,6 @@ enum PeranPanitia {
   bendahara
   pj_divisi
   anggota
-
-  @@map("peran_panitia")
 }
 
 enum JenisAgenda {
@@ -45,23 +39,17 @@ enum JenisAgenda {
   rapat_besar
   rapat_koordinasi
   hari_h
-
-  @@map("jenis_agenda")
 }
 
 enum TargetPeserta {
   hanya_pj_pi
   semua_panitia
   semua_panitia_sto
-
-  @@map("target_peserta")
 }
 
 enum StatusPresensi {
   hadir
   terlambat
-
-  @@map("status_presensi")
 }
 
 // ─────────────────────────────────────────────
@@ -70,7 +58,7 @@ enum StatusPresensi {
 
 model Periode {
   id         Int           @id @default(autoincrement())
-  nama       String
+  nama       String        @db.VarChar(255)
   tglMulai   DateTime      @map("tgl_mulai") @db.Date
   tglSelesai DateTime      @map("tgl_selesai") @db.Date
   status     StatusPeriode @default(aktif)
@@ -86,15 +74,15 @@ model Periode {
 // ─────────────────────────────────────────────
 
 model AkunAdsek {
-  id           Int       @id @default(autoincrement())
-  nama         String
-  email        String    @unique
-  firebaseUid  String?   @unique @map("firebase_uid")
-  role         RoleAdsek
+  id          Int       @id @default(autoincrement())
+  nama        String    @db.VarChar(255)
+  email       String    @unique @db.VarChar(191)
+  firebaseUid String?   @unique @map("firebase_uid") @db.VarChar(191)
+  role        RoleAdsek
 
-  prokerDibuat  Proker[]
-  agendaDibuat  Agenda[]
-  sesiDibuat    SesiPresensi[]
+  prokerDibuat Proker[]
+  agendaDibuat Agenda[]
+  sesiDibuat   SesiPresensi[]
 
   @@map("akun_adsek")
 }
@@ -102,13 +90,13 @@ model AkunAdsek {
 model Sto {
   id          Int     @id @default(autoincrement())
   periodeId   Int     @map("periode_id")
-  nama        String
-  nim         String
-  emailGoogle String  @unique @map("email_google")
-  firebaseUid String? @unique @map("firebase_uid")
-  jabatan     String?
-  divisi      String?
-  foto        String?
+  nama        String  @db.VarChar(255)
+  nim         String  @db.VarChar(50)
+  emailGoogle String  @unique @map("email_google") @db.VarChar(191)
+  firebaseUid String? @unique @map("firebase_uid") @db.VarChar(191)
+  jabatan     String? @db.VarChar(100)
+  divisi      String? @db.VarChar(100)
+  foto        String? @db.Text
 
   periode     Periode       @relation(fields: [periodeId], references: [id])
   kepanitiaan Kepanitiaan[]
@@ -123,12 +111,12 @@ model Sto {
 // ─────────────────────────────────────────────
 
 model Proker {
-  id         Int     @id @default(autoincrement())
-  periodeId  Int     @map("periode_id")
-  nama       String
-  deskripsi  String?
-  dibuatOleh Int     @map("dibuat_oleh")
-  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  id         Int      @id @default(autoincrement())
+  periodeId  Int      @map("periode_id")
+  nama       String   @db.VarChar(255)
+  deskripsi  String?  @db.Text
+  dibuatOleh Int      @map("dibuat_oleh")
+  createdAt  DateTime @default(now()) @map("created_at")
 
   periode     Periode       @relation(fields: [periodeId], references: [id])
   pembuat     AkunAdsek     @relation(fields: [dibuatOleh], references: [id])
@@ -140,11 +128,11 @@ model Proker {
 }
 
 model Kepanitiaan {
-  id             Int          @id @default(autoincrement())
-  prokerId       Int          @map("proker_id")
-  stoId          Int          @map("sto_id")
-  peran          PeranPanitia
-  divisiPanitia  String?      @map("divisi_panitia")
+  id            Int          @id @default(autoincrement())
+  prokerId      Int          @map("proker_id")
+  stoId         Int          @map("sto_id")
+  peran         PeranPanitia
+  divisiPanitia String?      @map("divisi_panitia") @db.VarChar(100)
 
   proker Proker @relation(fields: [prokerId], references: [id], onDelete: Cascade)
   sto    Sto    @relation(fields: [stoId], references: [id])
@@ -162,14 +150,14 @@ model Agenda {
   id               Int           @id @default(autoincrement())
   prokerId         Int           @map("proker_id")
   jenis            JenisAgenda
-  judul            String
+  judul            String        @db.VarChar(255)
   urutan           Int           @default(1)
   tglPelaksanaan   DateTime      @map("tgl_pelaksanaan") @db.Date
   waktuPelaksanaan DateTime      @map("waktu_pelaksanaan") @db.Time(0)
-  lokasiNama       String?      @map("lokasi_nama")
+  lokasiNama       String?       @map("lokasi_nama") @db.VarChar(255)
   targetPeserta    TargetPeserta @map("target_peserta")
   dibuatOleh       Int           @map("dibuat_oleh")
-  createdAt        DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  createdAt        DateTime      @default(now()) @map("created_at")
 
   proker  Proker         @relation(fields: [prokerId], references: [id])
   pembuat AkunAdsek      @relation(fields: [dibuatOleh], references: [id])
@@ -187,14 +175,14 @@ model SesiPresensi {
   id          Int      @id @default(autoincrement())
   agendaId    Int      @map("agenda_id")
   dibuatOleh  Int      @map("dibuat_oleh")
-  bukaAt      DateTime @map("buka_at") @db.Timestamptz(6)
-  tutupAt     DateTime @map("tutup_at") @db.Timestamptz(6)
+  bukaAt      DateTime @map("buka_at")
+  tutupAt     DateTime @map("tutup_at")
   durasiMenit Int      @map("durasi_menit")
   lat         Decimal  @db.Decimal(9, 6)
   lng         Decimal  @db.Decimal(9, 6)
   radiusM     Int      @default(500) @map("radius_m")
-  qrSecret    String   @map("qr_secret")
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  qrSecret    String   @map("qr_secret") @db.VarChar(255)
+  createdAt   DateTime @default(now()) @map("created_at")
 
   agenda   Agenda     @relation(fields: [agendaId], references: [id])
   pembuat  AkunAdsek  @relation(fields: [dibuatOleh], references: [id])
@@ -208,7 +196,7 @@ model Presensi {
   id        Int            @id @default(autoincrement())
   sesiId    Int            @map("sesi_id")
   stoId     Int            @map("sto_id")
-  waktuScan DateTime       @map("waktu_scan") @db.Timestamptz(6)
+  waktuScan DateTime       @map("waktu_scan")
   lat       Decimal        @db.Decimal(9, 6)
   lng       Decimal        @db.Decimal(9, 6)
   jarakM    Int            @map("jarak_m")
@@ -221,19 +209,3 @@ model Presensi {
   @@index([stoId])
   @@map("presensi")
 }
-
-// ─────────────────────────────────────────────
-// CATATAN MIGRASI (tidak bisa dinyatakan di Prisma)
-// ─────────────────────────────────────────────
-// 1. Hanya satu periode aktif pada satu waktu. Tambahkan lewat migrasi SQL manual
-//    (npx prisma migrate dev --create-only), lalu edit file migrasinya:
-//
-//      CREATE UNIQUE INDEX periode_satu_aktif
-//        ON periode (status) WHERE status = 'aktif';
-//
-// 2. Autentikasi memakai Firebase Authentication (bukan Auth.js). Password tidak
-//    disimpan di database ini. `firebase_uid` diisi saat login pertama (atau saat
-//    admin membuat akun lewat Firebase Admin SDK). Skema ini tidak memerlukan
-//    model Account/Session/VerificationToken.
-// 3. Satu email sebaiknya tidak ada di `akun_adsek` dan `STO` sekaligus. Jika
-//    terjadi, server memprioritaskan `akun_adsek`.
