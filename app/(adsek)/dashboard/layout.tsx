@@ -20,15 +20,15 @@ export default async function DashboardLayout({
   const isAdmin = adsek.role === "admin";
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 font-sans text-zinc-900 dark:text-zinc-100 flex flex-col">
+    <div className="min-h-screen bg-surface font-sans text-navy flex flex-col">
       {/* Top Navbar */}
-      <header className="sticky top-0 z-40 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800">
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#E2E8F0] shadow-[0_1px_3px_rgba(11,42,91,0.04)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Left: Brand & Navigation */}
             <div className="flex items-center gap-8">
               <Link href="/dashboard" className="flex items-center gap-3 group">
-                <div className="relative w-9 h-9 rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-white p-0.5 shadow-sm group-hover:scale-105 transition-transform">
+                <div className="relative w-9 h-9 rounded-xl overflow-hidden border border-[#E2E8F0] bg-white p-0.5 shadow-sm group-hover:scale-105 transition-transform">
                   <Image
                     src="/logo-pcc.png"
                     alt="Logo UKM PCC"
@@ -39,10 +39,10 @@ export default async function DashboardLayout({
                   />
                 </div>
                 <div>
-                  <h1 className="text-sm font-bold tracking-tight text-zinc-900 dark:text-zinc-50 leading-tight">
+                  <h1 className="text-sm font-bold tracking-tight text-primary leading-tight">
                     Presensi Adsek
                   </h1>
-                  <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">
+                  <p className="text-[10px] text-secondary uppercase tracking-wider font-semibold">
                     {adsek.role.replace("_", " ")}
                   </p>
                 </div>
@@ -52,32 +52,32 @@ export default async function DashboardLayout({
               <nav className="hidden md:flex items-center gap-1">
                 <Link
                   href="/dashboard"
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-zinc-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-slate-muted hover:text-secondary hover:bg-surface transition-colors"
                 >
-                  <LayoutDashboard className="w-4 h-4" />
+                  <LayoutDashboard className="w-4 h-4 text-secondary" />
                   Ringkasan
                 </Link>
                 <Link
                   href="/dashboard/proker"
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-zinc-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-slate-muted hover:text-secondary hover:bg-surface transition-colors"
                 >
-                  <FolderKanban className="w-4 h-4" />
+                  <FolderKanban className="w-4 h-4 text-accent" />
                   Proker & Agenda
                 </Link>
                 {isAdmin && (
                   <>
                     <Link
                       href="/dashboard/periode"
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-zinc-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 transition-colors"
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-slate-muted hover:text-secondary hover:bg-surface transition-colors"
                     >
-                      <Calendar className="w-4 h-4" />
+                      <Calendar className="w-4 h-4 text-primary" />
                       Periode
                     </Link>
                     <Link
                       href="/dashboard/sto"
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-zinc-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 transition-colors"
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-slate-muted hover:text-secondary hover:bg-surface transition-colors"
                     >
-                      <Users className="w-4 h-4" />
+                      <Users className="w-4 h-4 text-secondary" />
                       Data STO
                     </Link>
                   </>
@@ -88,10 +88,10 @@ export default async function DashboardLayout({
             {/* Right: User Profile & Logout */}
             <div className="flex items-center gap-3">
               <div className="hidden sm:flex flex-col text-right">
-                <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200">
+                <span className="text-xs font-bold text-navy">
                   {adsek.nama}
                 </span>
-                <span className="text-[10px] text-zinc-500">
+                <span className="text-[10px] text-slate-muted">
                   {session.email}
                 </span>
               </div>
@@ -101,35 +101,35 @@ export default async function DashboardLayout({
         </div>
 
         {/* Mobile Nav */}
-        <div className="md:hidden flex items-center gap-1 px-4 py-2 border-t border-zinc-200/60 dark:border-zinc-800/60 overflow-x-auto">
+        <div className="md:hidden flex items-center gap-1 px-4 py-2 border-t border-[#E2E8F0] overflow-x-auto bg-white">
           <Link
             href="/dashboard"
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 whitespace-nowrap"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-muted hover:text-secondary hover:bg-surface whitespace-nowrap"
           >
-            <LayoutDashboard className="w-3.5 h-3.5" />
+            <LayoutDashboard className="w-3.5 h-3.5 text-secondary" />
             Ringkasan
           </Link>
           <Link
             href="/dashboard/proker"
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 whitespace-nowrap"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-muted hover:text-secondary hover:bg-surface whitespace-nowrap"
           >
-            <FolderKanban className="w-3.5 h-3.5" />
+            <FolderKanban className="w-3.5 h-3.5 text-accent" />
             Proker & Agenda
           </Link>
           {isAdmin && (
             <>
               <Link
                 href="/dashboard/periode"
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 whitespace-nowrap"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-muted hover:text-secondary hover:bg-surface whitespace-nowrap"
               >
-                <Calendar className="w-3.5 h-3.5" />
+                <Calendar className="w-3.5 h-3.5 text-primary" />
                 Periode
               </Link>
               <Link
                 href="/dashboard/sto"
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 whitespace-nowrap"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-muted hover:text-secondary hover:bg-surface whitespace-nowrap"
               >
-                <Users className="w-3.5 h-3.5" />
+                <Users className="w-3.5 h-3.5 text-secondary" />
                 Data STO
               </Link>
             </>

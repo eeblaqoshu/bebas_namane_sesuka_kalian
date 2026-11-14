@@ -35,3 +35,9 @@ export function getClientAuth(): Auth {
 }
 
 export const googleProvider = new GoogleAuthProvider();
+
+// Batasi pilihan akun Google hanya untuk domain kampus mahasiswa Polines (@mhs.polines.ac.id)
+googleProvider.setCustomParameters({
+  hd: "mhs.polines.ac.id",
+  prompt: "select_account",
+});

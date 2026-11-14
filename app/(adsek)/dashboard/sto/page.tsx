@@ -17,21 +17,21 @@ export default async function StoPage() {
 
   if (!periodeAktif) {
     return (
-      <div className="p-8 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-center space-y-4 max-w-lg mx-auto my-8">
-        <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950 text-amber-600 flex items-center justify-center mx-auto">
+      <div className="p-8 rounded-2xl bg-white border border-[#E2E8F0] text-center space-y-4 max-w-lg mx-auto my-8 shadow-sm">
+        <div className="w-12 h-12 rounded-2xl bg-highlight/15 text-[#B45309] flex items-center justify-center mx-auto">
           <AlertCircle className="w-6 h-6" />
         </div>
         <div>
-          <h2 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
+          <h2 className="text-base font-bold text-primary">
             Tidak Ada Periode Aktif
           </h2>
-          <p className="text-xs text-zinc-500 mt-1">
+          <p className="text-xs text-slate-muted mt-1">
             Data STO wajib terikat ke periode kepengurusan aktif. Silakan buka periode baru terlebih dahulu.
           </p>
         </div>
         <Link
           href="/dashboard/periode"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-md shadow-blue-500/20 transition-all"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary hover:bg-primary text-white text-xs font-semibold shadow-md shadow-secondary/25 transition-all"
         >
           <Calendar className="w-4 h-4" />
           Buka Periode Sekarang
